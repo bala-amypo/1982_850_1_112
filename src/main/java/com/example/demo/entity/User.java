@@ -3,14 +3,15 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class CredentialHolderProfile {
+public class User {
 
     @Id
     @GeneratedValue
     private Long id;
+    private String fullName;
     private String email;
-    private String organization;
-    private Boolean active;
+    private String password;
+    private String role;
 
    
 }
