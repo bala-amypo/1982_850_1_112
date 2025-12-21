@@ -9,7 +9,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
-public class OpenApiConfig {
+public class Swagger {
 
         @Bean
         public OpenAPI customOpenAPI() {
