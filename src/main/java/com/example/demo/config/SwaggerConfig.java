@@ -1,24 +1,33 @@
 package com.example.demo.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@OpenAPIDefinition(
-    info = @Info(
-        title = "Demo Authentication API",
-        version = "1.0",
-        description = "Spring Boot Auth API with JWT & Swagger"
-    )
-)
-@SecurityScheme(
-    name = "BearerAuth",
-    type = SecuritySchemeType.HTTP,
-    scheme = "bearer",
-    bearerFormat = "JWT"
-)
 public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI openAPI() {
+
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Digital Credential Verification Engine")
+                        .version("1.0")
+                        .description("Digital Credential Verification Engine APIs"))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(
+                        new io.swagger.v3.oas.models.Components()
+                                .addSecuritySchemes(
+                                        "bearerAuth",
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                )
+                );
+    }
 }
