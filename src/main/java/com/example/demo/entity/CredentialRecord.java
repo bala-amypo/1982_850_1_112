@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@lombok
 public class CredentialRecord {
 
     @Id
