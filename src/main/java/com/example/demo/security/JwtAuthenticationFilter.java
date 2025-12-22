@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class JwtAuthenticationFilter implements AuthenticationEntryPoint {
+public class JwtAuthentication implements AuthenticationEntryPoint {
 
     @Override
     public void commence(
