@@ -1,12 +1,24 @@
 package com.example.demo.service;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.util.Set;
 
-@Entity
-@Table(name = "credential_record")
-public class CredentialRecord {
+import com.example.demo.entity.CredentialRecord;
+import java.util.List;
+
+public interface CredentialRecordService {
+
+    List<CredentialRecord> getByHolderId(Long holderId);
+
+    CredentialRecord getByCredentialCode(String code);
+
+
+
+    import jakarta.persistence.*;
+    import java.time.LocalDate;
+    import java.util.Set;
+
+    @Entity
+    @Table(name = "credential_record")
+    public class CredentialRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +40,8 @@ public class CredentialRecord {
     private Set<CredentialHolderProfile> holders;
 
     
-}
-package com.example.demo.service;
+    }
+    package com.example.demo.service;
 
 import com.example.demo.entity.CredentialRecord;
 import java.util.List;
@@ -39,4 +51,5 @@ public interface CredentialRecordService {
     List<CredentialRecord> getByHolderId(Long holderId);
 
     CredentialRecord getByCredentialCode(String code);
+}
 }
