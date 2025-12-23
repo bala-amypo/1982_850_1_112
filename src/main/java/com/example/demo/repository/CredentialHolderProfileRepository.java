@@ -11,4 +11,6 @@ public interface CredentialHolderProfileRepository extends JpaRepository<Credent
     @SuppressWarnings("unchecked")
     @Override
     CredentialHolderProfile save(CredentialHolderProfile profile);
+
+    
 }
