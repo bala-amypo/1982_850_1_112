@@ -6,6 +6,7 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     public CredentialRecordServiceImpl(CredentialRecordRepository repository) {
         this.repository = repository;
     }
+    
 
     @Override
     public List<CredentialRecord> getByHolderId(Long holderId) {
