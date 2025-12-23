@@ -1,6 +1,5 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -14,57 +13,24 @@ import java.util.Date;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String secret;
+    private String jwtSecret;
 
     @Value("${jwt.expiration}")
-    private long expirationMs;
+    private long jwtExpiration;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
     public String generateToken(Long userId, String email, String role) {
+
         return Jwts.builder()
-                .setSubject(email)
                 .claim("userId", userId)
                 .claim("role", role)
+                .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    private Claims getAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public String extractEmail(String token) {
-        return getAllClaims(token).getSubject();
-    }
-
-    public Long extractUserId(String token) {
-        return getAllClaims(token).get("userId", Long.class);
-    }
-
-    public String extractRole(String token) {
-        return getAllClaims(token).get("role", String.class);
-    }
-
-    public boolean isTokenExpired(String token) {
-        return getAllClaims(token)
-                .getExpiration()
-                .before(new Date());
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            return !isTokenExpired(token);
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
