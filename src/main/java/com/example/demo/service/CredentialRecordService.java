@@ -1,16 +1,15 @@
-package com.example.demo.service;
+@Entity
+public class CredentialRecord {
 
-import com.example.demo.entity.CredentialRecord;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-import java.util.List;
+    private String credentialCode;
 
-public interface CredentialRecordService {
+    @ManyToOne
+    @JoinColumn(name = "holder_id")
+    private CredentialHolderProfile holder;
 
-    CredentialRecord createCredential(CredentialRecord record);
-
-    CredentialRecord updateCredential(Long id, CredentialRecord update);
-
-    List<CredentialRecord> getCredentialsByHolder(Long holderId);
-
-    CredentialRecord getCredentialByCode(String code);
+    private LocalDate expiryDate;
 }
