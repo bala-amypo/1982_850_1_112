@@ -1,67 +1,38 @@
 package com.example.demo.config;
 
-import com.example.demo.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
-
-    private final CustomUserDetailsService userDetailsService;
-
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // Disable CSRF for Swagger and testing purposes
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+
+            // Configure endpoint authorization
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                            "/auth/register",
-                            "/auth/login",
-                            "/status",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/v3/api-docs/**",
-                            "/h2-console/**"
-                    ).permitAll()
-                    .anyRequest().authenticated()
+                // Permit Swagger/OpenAPI endpoints
+                .requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/index.html"
+                ).permitAll()
+                
+                // Permit auth endpoints
+                .requestMatchers("/auth/**").permitAll()
+                
+                // All other requests require authentication
+                .anyRequest().authenticated()
             )
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
-            .authenticationProvider(authenticationProvider());
+
+            // Optional: use HTTP Basic for testing (can replace with JWT)
+            .httpBasic();
 
         return http.build();
     }
