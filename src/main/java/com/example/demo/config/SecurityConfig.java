@@ -26,21 +26,21 @@ public class SecurityConfig {
 
     // Security filter chain
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/swagger-ui/index.html",
-                    "/auth/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-            .httpBasic(); // For testing, you can replace with JWT later
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) thhttp
+    .csrf(csrf -> csrf.disable())
+    .authorizeHttpRequests(auth -> auth
+        .requestMatchers(
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-ui/index.html",
+            "/auth/**"          // Allow register/login without auth
+        ).permitAll()
+        .anyRequest().authenticated()
+    )
+    .httpBasic();
+
 
         return http.build();
     }
-}
+
