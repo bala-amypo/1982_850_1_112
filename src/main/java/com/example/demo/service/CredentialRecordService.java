@@ -1,4 +1,11 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.Set;
+
 @Entity
+@Table(name = "credential_record")
 public class CredentialRecord {
 
     @Id
@@ -6,10 +13,19 @@ public class CredentialRecord {
     private Long id;
 
     private String credentialCode;
-
-    @ManyToOne
-    @JoinColumn(name = "holder_id")
-    private CredentialHolderProfile holder;
-
+    private String title;
+    private String credentialType;
+    private String issuer;
     private LocalDate expiryDate;
+    private String status;
+
+    @ManyToMany
+    @JoinTable(
+        name = "credential_holder_records",
+        joinColumns = @JoinColumn(name = "credential_id"),
+        inverseJoinColumns = @JoinColumn(name = "holder_id")
+    )
+    private Set<CredentialHolderProfile> holders;
+
+    
 }
