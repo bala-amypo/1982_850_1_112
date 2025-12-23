@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CredentialHolderRequest;
 import com.example.demo.entity.CredentialHolderProfile;
 import com.example.demo.service.CredentialHolderProfileService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,14 @@ public class CredentialHolderController {
 
     @PostMapping
     public ResponseEntity<CredentialHolderProfile> create(
-            @RequestBody CredentialHolderProfile profile) {
+            @Valid @RequestBody CredentialHolderRequest request) {
+
+        CredentialHolderProfile profile = new CredentialHolderProfile();
+        profile.setFullName(request.getFullName());
+        profile.setEmail(request.getEmail());
+        profile.setPhoneNumber(request.getPhoneNumber());
+        // set other fields as needed
+
         return ResponseEntity.ok(holderService.createHolder(profile));
     }
 

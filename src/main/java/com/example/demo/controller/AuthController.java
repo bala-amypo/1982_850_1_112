@@ -24,11 +24,10 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(
-            UserService userService,
-            AuthenticationManager authenticationManager,
-            JwtUtil jwtUtil,
-            PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil,
+                          PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -36,9 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(
-            @Valid @RequestBody RegisterRequest request) {
-
+    public ResponseEntity<JwtResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = new User();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
@@ -47,52 +44,24 @@ public class AuthController {
 
         User savedUser = userService.registerUser(user);
 
-        String token = jwtUtil.generateToken(
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getRole()
-        );
+        String token = jwtUtil.generateToken(savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
 
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        token,
-                        savedUser.getId(),
-                        savedUser.getEmail(),
-                        savedUser.getRole()
-                )
-        );
+        return ResponseEntity.ok(new JwtResponse(token, savedUser.getId(), savedUser.getEmail(), savedUser.getRole()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(
-            @Valid @RequestBody LoginRequest request) {
-
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
         } catch (BadCredentialsException ex) {
             throw new RuntimeException("Invalid email or password");
         }
 
         User user = userService.findByEmail(request.getEmail());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
 
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
-
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        token,
-                        user.getId(),
-                        user.getEmail(),
-                        user.getRole()
-                )
-        );
+        return ResponseEntity.ok(new JwtResponse(token, user.getId(), user.getEmail(), user.getRole()));
     }
 }
