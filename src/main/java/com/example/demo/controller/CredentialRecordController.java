@@ -1,9 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.CredentialRecordRequest;
 import com.example.demo.entity.CredentialRecord;
 import com.example.demo.service.CredentialRecordService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +19,7 @@ public class CredentialRecordController {
 
     // Create a new credential
     @PostMapping
-    public ResponseEntity<CredentialRecord> createCredential(@Valid @RequestBody CredentialRecordRequest request) {
-        CredentialRecord credential = new CredentialRecord();
-        credential.setCredentialCode(request.getCredentialCode());
-        credential.setHolderId(request.getHolderId());
-        credential.setTitle(request.getTitle());
-        credential.setDescription(request.getDescription());
-
+    public ResponseEntity<CredentialRecord> createCredential(@RequestBody CredentialRecord credential) {
         CredentialRecord created = credentialService.createCredential(credential);
         return ResponseEntity.ok(created);
     }
@@ -36,14 +28,8 @@ public class CredentialRecordController {
     @PutMapping("/{id}")
     public ResponseEntity<CredentialRecord> updateCredential(
             @PathVariable Long id,
-            @Valid @RequestBody CredentialRecordRequest request
+            @RequestBody CredentialRecord credential
     ) {
-        CredentialRecord credential = new CredentialRecord();
-        credential.setCredentialCode(request.getCredentialCode());
-        credential.setHolderId(request.getHolderId());
-        credential.setTitle(request.getTitle());
-        credential.setDescription(request.getDescription());
-
         CredentialRecord updated = credentialService.updateCredential(id, credential);
         return ResponseEntity.ok(updated);
     }

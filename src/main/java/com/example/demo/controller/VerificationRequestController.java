@@ -1,9 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.VerificationRequestDto;
 import com.example.demo.entity.VerificationRequest;
 import com.example.demo.service.VerificationRequestService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +16,8 @@ public class VerificationRequestController {
     }
 
     @PostMapping
-    public ResponseEntity<VerificationRequest> initiate(@Valid @RequestBody VerificationRequestDto requestDto) {
-        VerificationRequest request = new VerificationRequest();
-        request.setCredentialId(requestDto.getCredentialId());
-        request.setRequestedBy(requestDto.getRequestedBy());
-        request.setComments(requestDto.getComments());
-
-        VerificationRequest created = verificationService.initiateVerification(request);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<VerificationRequest> initiate(
+            @RequestBody VerificationRequest request) {
+        return ResponseEntity.ok(verificationService.initiateVerification(request));
     }
 }
