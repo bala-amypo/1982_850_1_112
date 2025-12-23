@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CredentialRecordService {
 
-    List<CredentialRecord> getByHolderId(Long holderId);
+    List<CredentialRecord> getByHolder_Id(Long holderId);
 
     CredentialRecord getByCredentialCode(String code);
 }
@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface CredentialRecordService {
 
-    List<CredentialRecord> getByHolderId(Long holderId);
+    List<CredentialRecord> getByHolder_Id(Long holderId);
 
     CredentialRecord getByCredentialCode(String code);
 
