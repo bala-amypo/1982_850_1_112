@@ -26,4 +26,35 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
         return repository.findByCredentialCode(code)
                 .orElseThrow(() -> new RuntimeException("Credential not found"));
     }
+
+    // New methods
+    @Override
+    public CredentialRecord createCredential(CredentialRecord credential) {
+        return repository.save(credential);
+    }
+
+    @Override
+    public CredentialRecord updateCredential(Long id, CredentialRecord credential) {
+        CredentialRecord existing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Credential not found"));
+        existing.setCredentialCode(credential.getCredentialCode());
+        existing.setTitle(credential.getTitle());
+        existing.setCredentialType(credential.getCredentialType());
+        existing.setIssuer(credential.getIssuer());
+        existing.setExpiryDate(credential.getExpiryDate());
+        existing.setStatus(credential.getStatus());
+        existing.setHolders(credential.getHolders());
+        return repository.save(existing);
+    }
+
+    @Override
+    public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
+        return repository.findByHolders_Id(holderId);
+    }
+
+    @Override
+    public CredentialRecord getCredentialByCode(String code) {
+        return repository.findByCredentialCode(code)
+                .orElseThrow(() -> new RuntimeException("Credential not found"));
+    }
 }
