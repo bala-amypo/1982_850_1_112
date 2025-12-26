@@ -22,7 +22,7 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    
+    // ✅ REQUIRED: No-args constructor (JPA)
     public User() {}
 
   
