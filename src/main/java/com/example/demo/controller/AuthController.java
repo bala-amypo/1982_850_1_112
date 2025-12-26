@@ -9,7 +9,6 @@ import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
 
 import jakarta.validation.Valid;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,19 +30,16 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(
-            UserService userService,
-            AuthenticationManager authenticationManager,
-            JwtUtil jwtUtil,
-            PasswordEncoder passwordEncoder) {
-
+    public AuthController(UserService userService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil,
+                          PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ================= REGISTER =================
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@Valid @RequestBody RegisterRequest request) {
 
@@ -52,70 +48,35 @@ public class AuthController {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Assign roles
         Set<String> roleNames = request.getRoles();
         if (roleNames == null || roleNames.isEmpty()) {
             roleNames = new HashSet<>();
-            roleNames.add("ROLE_USER"); // default role
+            roleNames.add("ROLE_USER");
         }
         user.setRoles(userService.getRolesFromNames(roleNames));
 
         User savedUser = userService.registerUser(user);
 
-        String token = jwtUtil.generateToken(
-                savedUser.getId(),
-                savedUser.getEmail(),
-                extractRoleNames(savedUser)
-        );
+        String token = jwtUtil.generateToken(savedUser.getId(), savedUser.getEmail(), extractRoleNames(savedUser));
 
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        token,
-                        savedUser.getId(),
-                        savedUser.getEmail(),
-                        extractRoleNames(savedUser)
-                )
-        );
+        return ResponseEntity.ok(new JwtResponse(token, savedUser.getId(), savedUser.getEmail(), extractRoleNames(savedUser)));
     }
 
-    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
-
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         } catch (BadCredentialsException ex) {
             throw new RuntimeException("Invalid email or password");
         }
 
         User user = userService.findByEmail(request.getEmail());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), extractRoleNames(user));
 
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                extractRoleNames(user)
-        );
-
-        return ResponseEntity.ok(
-                new JwtResponse(
-                        token,
-                        user.getId(),
-                        user.getEmail(),
-                        extractRoleNames(user)
-                )
-        );
+        return ResponseEntity.ok(new JwtResponse(token, user.getId(), user.getEmail(), extractRoleNames(user)));
     }
 
-    // ===== Helper Method to extract role names =====
     private Set<String> extractRoleNames(User user) {
-        return user.getRoles()
-                   .stream()
-                   .map(Role::getName)
-                   .collect(Collectors.toSet());
+        return user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
     }
 }
