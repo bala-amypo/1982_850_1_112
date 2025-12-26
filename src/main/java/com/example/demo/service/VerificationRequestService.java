@@ -6,9 +6,12 @@ import java.util.List;
 
 public interface VerificationRequestService {
 
+    
     VerificationRequest initiateVerification(VerificationRequest request);
 
+   
     VerificationRequest processVerification(Long requestId);
 
+   
     List<VerificationRequest> getRequestsByCredential(Long credentialId);
 }
