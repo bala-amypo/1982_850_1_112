@@ -12,7 +12,7 @@ public class Role {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // e.g., "ROLE_USER", "ROLE_ADMIN"
+    private String name; // ROLE_USER, ROLE_ADMIN
 
     public Role() {}
 
@@ -20,21 +20,11 @@ public class Role {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     @Override
     public boolean equals(Object o) {
