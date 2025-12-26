@@ -2,27 +2,21 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.AuditTrailRecord;
 import com.example.demo.repository.AuditTrailRecordRepository;
-import com.example.demo.service.AuditTrailService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
-public class AuditTrailServiceImpl implements AuditTrailService {
+public class AuditTrailServiceImpl {
 
-    private final AuditTrailRecordRepository auditRepo;
+    private final AuditTrailRecordRepository auditTrailRepository;
 
-    public AuditTrailServiceImpl(AuditTrailRecordRepository auditRepo) {
-        this.auditRepo = auditRepo;
+    public AuditTrailServiceImpl(AuditTrailRecordRepository auditTrailRepository) {
+        this.auditTrailRepository = auditTrailRepository;
     }
 
     @Override
-    public AuditTrailRecord logEvent(AuditTrailRecord record) {
-        if (record.getLoggedAt() == null) {
-            record.setLoggedAt(LocalDateTime.now());
-        }
-        return auditRepo.save(record);
+   public AuditTrailRecord saveAudit(Long userId) {
+        AuditTrailRecord record = new AuditTrailRecord(userId);
+        return auditTrailRepository.save(record);
     }
 
     @Override
