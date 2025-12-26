@@ -1,13 +1,12 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,25 +37,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthResponse login(AuthRequest request) {
+    public String login(String email, String password) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
+                new UsernamePasswordAuthenticationToken(email, password)
         );
 
-        String token = jwtUtil.generateToken(request.getEmail());
-        return new AuthResponse(token);
+        return jwtUtil.generateToken(email);
     }
 
     @Override
-    public User registerUser(String email, String password, Set<String> roles) {
+    public void registerUser(String email, String password, Set<String> roles) {
 
         Set<Role> roleSet = new HashSet<>();
+
         for (String roleName : roles) {
             Role role = roleRepository.findByName(roleName)
-                    .orElseThrow(() -> new RuntimeException("Role not found"));
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
             roleSet.add(role);
         }
 
@@ -65,12 +61,6 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(password));
         user.setRoles(roleSet);
 
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.save(user);
     }
 }
