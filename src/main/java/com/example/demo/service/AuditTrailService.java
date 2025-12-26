@@ -4,6 +4,8 @@ import com.example.demo.entity.AuditTrailRecord;
 import java.util.List;
 
 public interface AuditTrailService {
-    AuditTrailRecord saveAudit(Long credentialId);
-    List<AuditTrailRecord> findAll();
+
+    AuditTrailRecord logEvent(AuditTrailRecord record);
+
+    List<AuditTrailRecord> getLogsByCredential(Long credentialId);
 }

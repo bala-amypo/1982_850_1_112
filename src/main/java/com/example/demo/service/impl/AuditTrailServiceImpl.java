@@ -10,19 +10,19 @@ import java.util.List;
 @Service
 public class AuditTrailServiceImpl implements AuditTrailService {
 
-    private final AuditTrailRecordRepository repo;
+    private final AuditTrailRecordRepository auditRepo;
 
-    public AuditTrailServiceImpl(AuditTrailRecordRepository repo) {
-        this.repo = repo;
+    public AuditTrailServiceImpl(AuditTrailRecordRepository auditRepo) {
+        this.auditRepo = auditRepo;
     }
 
     @Override
-    public AuditTrailRecord saveAudit(Long credentialId) {
-        return repo.save(new AuditTrailRecord(credentialId));
+    public AuditTrailRecord logEvent(AuditTrailRecord record) {
+        return auditRepo.save(record);
     }
 
     @Override
-    public List<AuditTrailRecord> findAll() {
-        return repo.findAll();
+    public List<AuditTrailRecord> getLogsByCredential(Long credentialId) {
+        return auditRepo.findByCredentialId(credentialId);
     }
 }
