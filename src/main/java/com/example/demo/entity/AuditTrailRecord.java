@@ -14,6 +14,12 @@ public class AuditTrailRecord {
     @Column(nullable = false)
     private Long credentialId;
 
+    @Column(nullable = false)
+    private Long userId;  // User performing the action
+
+    @Column(nullable = false)
+    private String roleName; // Role of the user performing the action
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime loggedAt;
 
@@ -26,8 +32,10 @@ public class AuditTrailRecord {
     // Constructors
     public AuditTrailRecord() {}
 
-    public AuditTrailRecord(Long credentialId) {
+    public AuditTrailRecord(Long credentialId, Long userId, String roleName) {
         this.credentialId = credentialId;
+        this.userId = userId;
+        this.roleName = roleName;
     }
 
     // Getters & Setters
@@ -41,6 +49,22 @@ public class AuditTrailRecord {
 
     public void setCredentialId(Long credentialId) {
         this.credentialId = credentialId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public LocalDateTime getLoggedAt() {
