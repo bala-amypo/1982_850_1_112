@@ -1,28 +1,28 @@
 package com.example.demo.service.impl;
 
-
-import java.util.List;
 import com.example.demo.entity.AuditTrailRecord;
 import com.example.demo.repository.AuditTrailRecordRepository;
+import com.example.demo.service.AuditTrailService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class AuditTrailServiceImpl {
+public class AuditTrailServiceImpl implements AuditTrailService {
 
-    private final AuditTrailRecordRepository auditTrailRepository;
+    private final AuditTrailRecordRepository repo;
 
-    public AuditTrailServiceImpl(AuditTrailRecordRepository auditTrailRepository) {
-        this.auditTrailRepository = auditTrailRepository;
+    public AuditTrailServiceImpl(AuditTrailRecordRepository repo) {
+        this.repo = repo;
     }
 
     @Override
-   public AuditTrailRecord saveAudit(Long userId) {
-        AuditTrailRecord record = new AuditTrailRecord(userId);
-        return auditTrailRepository.save(record);
+    public AuditTrailRecord saveAudit(Long credentialId) {
+        return repo.save(new AuditTrailRecord(credentialId));
     }
 
     @Override
-    public List<AuditTrailRecord> getLogsByCredential(Long credentialId) {
-        return auditRepo.findByCredentialId(credentialId);
+    public List<AuditTrailRecord> findAll() {
+        return repo.findAll();
     }
 }
