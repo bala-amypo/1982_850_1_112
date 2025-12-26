@@ -3,16 +3,22 @@ package com.example.demo.controller;
 import com.example.demo.dto.JwtResponse;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,12 +35,14 @@ public class AuthController {
             AuthenticationManager authenticationManager,
             JwtUtil jwtUtil,
             PasswordEncoder passwordEncoder) {
+
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ================= REGISTER =================
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(
             @Valid @RequestBody RegisterRequest request) {
@@ -43,14 +51,16 @@ public class AuthController {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+
+        // Assign roles (Many-to-Many)
+        user.setRoles(userService.getRolesFromNames(request.getRoles()));
 
         User savedUser = userService.registerUser(user);
 
         String token = jwtUtil.generateToken(
                 savedUser.getId(),
                 savedUser.getEmail(),
-                savedUser.getRole()
+                extractRoleNames(savedUser)
         );
 
         return ResponseEntity.ok(
@@ -58,11 +68,12 @@ public class AuthController {
                         token,
                         savedUser.getId(),
                         savedUser.getEmail(),
-                        savedUser.getRole()
+                        extractRoleNames(savedUser)
                 )
         );
     }
 
+    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(
             @Valid @RequestBody LoginRequest request) {
@@ -83,7 +94,7 @@ public class AuthController {
         String token = jwtUtil.generateToken(
                 user.getId(),
                 user.getEmail(),
-                user.getRole()
+                extractRoleNames(user)
         );
 
         return ResponseEntity.ok(
@@ -91,8 +102,16 @@ public class AuthController {
                         token,
                         user.getId(),
                         user.getEmail(),
-                        user.getRole()
+                        extractRoleNames(user)
                 )
         );
+    }
+
+    // ===== Helper Method =====
+    private Set<String> extractRoleNames(User user) {
+        return user.getRoles()
+                   .stream()
+                   .map(Role::getName)
+                   .collect(Collectors.toSet());
     }
 }
