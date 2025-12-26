@@ -4,9 +4,12 @@ import com.example.demo.entity.CredentialHolderProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CredentialHolderProfileRepository
         extends JpaRepository<CredentialHolderProfile, Long> {
 
-    // Add ONLY custom query methods here if needed
+    
+    Optional<CredentialHolderProfile> findByEmail(String email);
 }
