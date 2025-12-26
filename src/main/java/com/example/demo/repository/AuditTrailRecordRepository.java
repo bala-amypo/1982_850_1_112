@@ -5,9 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AuditTrailRecordRepository
-        extends JpaRepository<AuditTrailRecord, Long> {
-
-    
-    List<AuditTrailRecord> findByCredentialIdOrderByLoggedAtDesc(Long credentialId);
+public interface AuditTrailRecordRepository extends JpaRepository<AuditTrailRecord, Long> {
+    List<AuditTrailRecord> findByCredentialId(Long credentialId);
 }
