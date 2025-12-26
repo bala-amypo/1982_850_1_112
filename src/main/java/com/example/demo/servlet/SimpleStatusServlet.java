@@ -8,15 +8,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class SimpleStatusServlet extends HttpServlet {
-
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-        
-        resp.setContentType("text/plain");
-
-        PrintWriter writer = resp.getWriter(); 
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        PrintWriter writer = resp.getWriter();   // must throw exception if null
         writer.write("Digital Credential Verification Engine is running");
-        writer.flush();
     }
 }
