@@ -12,40 +12,20 @@ public class AuditTrailRecord {
     private Long id;
 
     @Column(nullable = false)
-    private Long credentialId;
-
-    @Column(nullable = false)
     private Long userId;
-
-    @Column(nullable = false)
-    private String roleName;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime loggedAt;
 
     @PrePersist
-    protected void onCreate() {
-        this.loggedAt = LocalDateTime.now();
-    }
+    protected void onCreate() { this.loggedAt = LocalDateTime.now(); }
 
+    // Constructors
     public AuditTrailRecord() {}
+    public AuditTrailRecord(Long userId) { this.userId = userId; }
 
-    public AuditTrailRecord(Long credentialId, Long userId, String roleName) {
-        this.credentialId = credentialId;
-        this.userId = userId;
-        this.roleName = roleName;
-    }
-
+    // Getters
     public Long getId() { return id; }
-
-    public Long getCredentialId() { return credentialId; }
-    public void setCredentialId(Long credentialId) { this.credentialId = credentialId; }
-
     public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-
-    public String getRoleName() { return roleName; }
-    public void setRoleName(String roleName) { this.roleName = roleName; }
-
     public LocalDateTime getLoggedAt() { return loggedAt; }
 }
