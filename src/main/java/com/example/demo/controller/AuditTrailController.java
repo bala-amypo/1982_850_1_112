@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.AuditTrailRecord;
 import com.example.demo.service.AuditTrailService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +17,12 @@ public class AuditTrailController {
     }
 
     @PostMapping
-    public ResponseEntity<AuditTrailRecord> log(@RequestBody AuditTrailRecord record) {
-        return ResponseEntity.ok(auditService.logEvent(record));
+    public AuditTrailRecord logEvent(@RequestBody AuditTrailRecord record) {
+        return auditService.logEvent(record);
     }
 
-    @GetMapping("/credential/{credentialId}")
-    public ResponseEntity<List<AuditTrailRecord>> getByCredential(@PathVariable Long credentialId) {
-        return ResponseEntity.ok(auditService.getLogsByCredential(credentialId));
+    @GetMapping("/{credentialId}")
+    public List<AuditTrailRecord> getLogs(@PathVariable Long credentialId) {
+        return auditService.getLogsByCredential(credentialId);
     }
 }
