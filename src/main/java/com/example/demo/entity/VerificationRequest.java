@@ -19,6 +19,15 @@ public class VerificationRequest {
     public VerificationRequest() {
     }
 
+  
+    public VerificationRequest(Long id, String status, CredentialRecord credential) {
+        this.id = id;
+        this.status = status;
+        this.credential = credential;
+    }
+
+  
+
     public Long getId() {
         return id;
     }
