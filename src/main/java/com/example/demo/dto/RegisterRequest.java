@@ -1,21 +1,18 @@
 package com.example.demo.dto;
 
-import java.util.Set;
-
 public class RegisterRequest {
 
-    private String name;
+    private String fullName;
     private String email;
     private String password;
-    private Set<String> roles;
+    private String role;
 
-    // getters and setters
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -34,11 +31,11 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 }
