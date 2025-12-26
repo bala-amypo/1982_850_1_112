@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Service to load user details for Spring Security.
+ */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -23,15 +26,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        try {
-            User user = userService.findByEmail(email);
-            return new CustomUserPrincipal(user);
-        } catch (Exception e) {
-            throw new UsernameNotFoundException("User not found: " + email);
+        // Load user from database using UserService
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
         }
+        return new CustomUserPrincipal(user);
     }
 
+    /**
+     * Internal class to adapt our User entity to Spring Security's UserDetails
+     */
     private static class CustomUserPrincipal implements UserDetails {
+
         private final User user;
 
         public CustomUserPrincipal(User user) {
@@ -40,6 +47,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
+            // Assign role prefixed with "ROLE_" as required by Spring Security
             return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
         }
 

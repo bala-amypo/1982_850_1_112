@@ -1,41 +1,78 @@
 package com.example.demo.security;
 
-import jakarta.servlet.Filter;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
-public class JwtAuthenticationFilter implements Filter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Override
-    public void doFilter(
-            jakarta.servlet.ServletRequest request,
-            jakarta.servlet.ServletResponse response,
-            FilterChain chain)
-            throws IOException, ServletException {
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String token = extractToken(httpRequest);
-
-        // Simple token validation - just check if token exists
-        if (StringUtils.hasText(token)) {
-            // Token processing logic would go here
-            System.out.println("JWT Token found: " + token.substring(0, Math.min(token.length(), 10)) + "...");
-        }
-
-        chain.doFilter(request, response);
+    public JwtAuthenticationFilter(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
-    private String extractToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String authHeader = request.getHeader("Authorization");
+        String token = null;
+        String email = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+            try {
+                Claims claims = Jwts.parser()
+                        .setSigningKey("mySecretKey12345") // same as in JwtUtil
+                        .parseClaimsJws(token)
+                        .getBody();
+                email = claims.get("email", String.class);
+            } catch (Exception e) {
+                logger.error("JWT parsing failed: " + e.getMessage());
+            }
         }
-        return null;
+
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            if (jwtUtilValidate(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private boolean jwtUtilValidate(String token, UserDetails userDetails) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey("mySecretKey12345")
+                    .parseClaimsJws(token)
+                    .getBody();
+            String email = claims.get("email", String.class);
+            return email.equals(userDetails.getUsername()) && claims.getExpiration().after(new java.util.Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
