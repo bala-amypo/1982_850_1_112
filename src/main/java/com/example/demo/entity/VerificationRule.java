@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(
@@ -18,22 +19,21 @@ public class VerificationRule {
     @Column(nullable = false, unique = true)
     private String ruleCode;
 
-    // ✅ Default value required by tests
     @Column(nullable = false)
     private Boolean active = true;
 
-    // ✅ JPA required
+    // Default constructor required by JPA
     public VerificationRule() {
     }
 
-    // ✅ Required by tests
+    // Constructor for tests or convenience
     public VerificationRule(Long id, String ruleCode, Boolean active) {
         this.id = id;
         this.ruleCode = ruleCode;
         this.active = active;
     }
 
-    // ---------- getters & setters ----------
+    // ---------- Getters & Setters ----------
 
     public Long getId() {
         return id;
@@ -57,5 +57,29 @@ public class VerificationRule {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    // ---------- Optional: equals, hashCode, toString ----------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VerificationRule)) return false;
+        VerificationRule that = (VerificationRule) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "VerificationRule{" +
+                "id=" + id +
+                ", ruleCode='" + ruleCode + '\'' +
+                ", active=" + active +
+                '}';
     }
 }

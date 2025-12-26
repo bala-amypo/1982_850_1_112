@@ -1,117 +1,145 @@
-    package com.example.demo.entity;
+package com.example.demo.entity;
 
-    import jakarta.persistence.*;
-    import java.time.LocalDate;
-    import java.util.HashSet;
-    import java.util.Set;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
-    @Entity
-    @Table(name = "credential_record")
-    public class CredentialRecord {
+@Entity
+@Table(name = "credential_records")
+public class CredentialRecord {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        // Changed from ManyToMany to simple holderId
-        private Long holderId;
+    // Reference to Credential Holder (User/Profile)
+    @Column(nullable = false)
+    private Long holderId;
 
-        private String credentialCode;
-        private String title;
-        private String credentialType;
-        private String issuer;
-        private LocalDate expiryDate;
-        private String status;
+    @Column(nullable = false, unique = true)
+    private String credentialCode;
 
-        @Column(columnDefinition = "TEXT")
-        private String metadataJson;
+    @Column(nullable = false)
+    private String title;
 
-        @ManyToMany
-        @JoinTable(
-            name = "credential_rules",
-            joinColumns = @JoinColumn(name = "credential_id"),
-            inverseJoinColumns = @JoinColumn(name = "rule_id")
-        )
-        private Set<VerificationRule> rules = new HashSet<>();
+    @Column(nullable = false)
+    private String credentialType;
 
-        // Getters and Setters
-        public Long getId() {
-            return id;
-        }
+    @Column(nullable = false)
+    private String issuer;
 
-        public void setId(Long id) {
-            this.id = id;
-        }
+    private LocalDate expiryDate;
 
-        public Long getHolderId() {
-            return holderId;
-        }
+    @Column(nullable = false)
+    private String status;
 
-        public void setHolderId(Long holderId) {
-            this.holderId = holderId;
-        }
+    @Column(columnDefinition = "TEXT")
+    private String metadataJson;
 
-        public String getCredentialCode() {
-            return credentialCode;
-        }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "credential_rules",
+        joinColumns = @JoinColumn(name = "credential_id"),
+        inverseJoinColumns = @JoinColumn(name = "rule_id")
+    )
+    private Set<VerificationRule> rules = new HashSet<>();
 
-        public void setCredentialCode(String credentialCode) {
-            this.credentialCode = credentialCode;
-        }
+    // Constructors
+    public CredentialRecord() {}
 
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getCredentialType() {
-            return credentialType;
-        }
-
-        public void setCredentialType(String credentialType) {
-            this.credentialType = credentialType;
-        }
-
-        public String getIssuer() {
-            return issuer;
-        }
-
-        public void setIssuer(String issuer) {
-            this.issuer = issuer;
-        }
-
-        public LocalDate getExpiryDate() {
-            return expiryDate;
-        }
-
-        public void setExpiryDate(LocalDate expiryDate) {
-            this.expiryDate = expiryDate;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-        public String getMetadataJson() {
-            return metadataJson;
-        }
-
-        public void setMetadataJson(String metadataJson) {
-            this.metadataJson = metadataJson;
-        }
-
-        public Set<VerificationRule> getRules() {
-            return rules;
-        }
-
-        public void setRules(Set<VerificationRule> rules) {
-            this.rules = rules;
-        }
+    public CredentialRecord(
+            Long holderId,
+            String credentialCode,
+            String title,
+            String credentialType,
+            String issuer,
+            LocalDate expiryDate,
+            String status
+    ) {
+        this.holderId = holderId;
+        this.credentialCode = credentialCode;
+        this.title = title;
+        this.credentialType = credentialType;
+        this.issuer = issuer;
+        this.expiryDate = expiryDate;
+        this.status = status;
     }
+
+    // Getters & Setters
+    public Long getId() {
+        return id;
+    }
+
+    public Long getHolderId() {
+        return holderId;
+    }
+
+    public void setHolderId(Long holderId) {
+        this.holderId = holderId;
+    }
+
+    public String getCredentialCode() {
+        return credentialCode;
+    }
+
+    public void setCredentialCode(String credentialCode) {
+        this.credentialCode = credentialCode;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getCredentialType() {
+        return credentialType;
+    }
+
+    public void setCredentialType(String credentialType) {
+        this.credentialType = credentialType;
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getMetadataJson() {
+        return metadataJson;
+    }
+
+    public void setMetadataJson(String metadataJson) {
+        this.metadataJson = metadataJson;
+    }
+
+    public Set<VerificationRule> getRules() {
+        return rules;
+    }
+
+    public void setRules(Set<VerificationRule> rules) {
+        this.rules = rules;
+    }
+}
