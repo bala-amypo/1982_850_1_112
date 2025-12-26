@@ -1,52 +1,98 @@
-package com.example.OneToMany.controller;
+package com.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.dto.JwtResponse;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.RegisterRequest;
+import com.example.demo.entity.User;
+import com.example.demo.security.JwtUtil;
+import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.OneToMany.dto.AuthRequest;
-import com.example.OneToMany.dto.AuthResponse;
-import com.example.OneToMany.entity.User;
-import com.example.OneToMany.security.JwtUtil;
-import com.example.OneToMany.service.UserService;
-
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    public AuthController(
+            UserService userService,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil,
+            PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostMapping("/register")
-public String register(@RequestBody User user) {
-    userService.saveUser(user);
-    return "User registered successfully";
-}
+    public ResponseEntity<JwtResponse> register(
+            @Valid @RequestBody RegisterRequest request) {
+
+        User user = new User();
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+
+        User savedUser = userService.registerUser(user);
+
+        String token = jwtUtil.generateToken(
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getRole()
+        );
+
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        token,
+                        savedUser.getId(),
+                        savedUser.getEmail(),
+                        savedUser.getRole()
+                )
+        );
+    }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
+    public ResponseEntity<JwtResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException ex) {
+            throw new RuntimeException("Invalid email or password");
+        }
 
         User user = userService.findByEmail(request.getEmail());
 
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
-        }
-
         String token = jwtUtil.generateToken(
+                user.getId(),
                 user.getEmail(),
                 user.getRole()
         );
 
-        return new AuthResponse(token, user.getRole());
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        token,
+                        user.getId(),
+                        user.getEmail(),
+                        user.getRole()
+                )
+        );
     }
 }
