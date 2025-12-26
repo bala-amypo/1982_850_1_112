@@ -17,17 +17,6 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     }
 
     @Override
-    public List<CredentialRecord> getByHolderId(Long holderId) {
-        return repository.findByHolderId(holderId);
-    }
-
-    @Override
-    public CredentialRecord getByCredentialCode(String code) {
-        return repository.findByCredentialCode(code)
-                .orElseThrow(() -> new RuntimeException("Credential not found"));
-    }
-
-    @Override
     public CredentialRecord createCredential(CredentialRecord credential) {
         return repository.save(credential);
     }
@@ -36,24 +25,21 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     public CredentialRecord updateCredential(Long id, CredentialRecord credential) {
         CredentialRecord existing = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Credential not found"));
-
         existing.setCredentialCode(credential.getCredentialCode());
         existing.setTitle(credential.getTitle());
         existing.setCredentialType(credential.getCredentialType());
         existing.setIssuer(credential.getIssuer());
         existing.setExpiryDate(credential.getExpiryDate());
         existing.setStatus(credential.getStatus());
+        existing.setHolderId(credential.getHolderId()); // updated for holderId
         existing.setMetadataJson(credential.getMetadataJson());
         existing.setRules(credential.getRules());
-
-        existing.setHolderId(credential.getHolderId());
-
         return repository.save(existing);
     }
 
     @Override
     public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
-        return repository.findByHolderId(holderId);
+        return repository.findByHolderId(holderId); // fixed
     }
 
     @Override
