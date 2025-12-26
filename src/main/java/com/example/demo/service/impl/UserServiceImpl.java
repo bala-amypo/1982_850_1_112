@@ -29,8 +29,8 @@ public class UserServiceImpl implements UserService {
             RoleRepository roleRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtUtil jwtUtil
-    ) {
+            JwtUtil jwtUtil) {
+
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(String email, String password) {
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
@@ -53,10 +54,10 @@ public class UserServiceImpl implements UserService {
         Set<Role> roleSet = new HashSet<>();
 
         for (String roleName : roles) {
-            Role role = roleRepository.findByName(roleName)
-                    .orElseThrow(() ->
-                            new RuntimeException("Role not found: " + roleName)
-                    );
+            Role role = roleRepository.findByName(roleName);
+            if (role == null) {
+                throw new RuntimeException("Role not found: " + roleName);
+            }
             roleSet.add(role);
         }
 
