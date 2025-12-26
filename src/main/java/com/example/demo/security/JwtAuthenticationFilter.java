@@ -1,7 +1,5 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,48 +29,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
+        final String authHeader = request.getHeader("Authorization");
         String email = null;
+        String token = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey("mySecretKey12345") // same as in JwtUtil
-                        .parseClaimsJws(token)
-                        .getBody();
-                email = claims.get("email", String.class);
+                email = jwtUtil.extractEmail(token);
             } catch (Exception e) {
-                logger.error("JWT parsing failed: " + e.getMessage());
+                logger.error("Invalid JWT token: " + e.getMessage());
             }
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            if (jwtUtilValidate(token, userDetails)) {
+            if (jwtUtil.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private boolean jwtUtilValidate(String token, UserDetails userDetails) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey("mySecretKey12345")
-                    .parseClaimsJws(token)
-                    .getBody();
-            String email = claims.get("email", String.class);
-            return email.equals(userDetails.getUsername()) && claims.getExpiration().after(new java.util.Date());
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
