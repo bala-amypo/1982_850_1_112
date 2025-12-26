@@ -13,7 +13,7 @@ public class CredentialRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
+    // Changed from ManyToMany to simple holderId
     private Long holderId;
 
     private String credentialCode;
@@ -23,11 +23,9 @@ public class CredentialRecord {
     private LocalDate expiryDate;
     private String status;
 
-    
     @Column(columnDefinition = "TEXT")
     private String metadataJson;
 
-    
     @ManyToMany
     @JoinTable(
         name = "credential_rules",
@@ -36,7 +34,7 @@ public class CredentialRecord {
     )
     private Set<VerificationRule> rules = new HashSet<>();
 
-
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -109,7 +107,6 @@ public class CredentialRecord {
         this.metadataJson = metadataJson;
     }
 
-   
     public Set<VerificationRule> getRules() {
         return rules;
     }
