@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,12 +20,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(User user) {
+        // Check if email already exists
+        repo.findByEmail(user.getEmail()).ifPresent(existing -> {
+            throw new IllegalArgumentException("Email already registered");
+        });
+
+        // Encode password before saving
         user.setPassword(encoder.encode(user.getPassword()));
         return repo.save(user);
     }
 
     @Override
     public User getUserByEmail(String email) {
-        return repo.findByEmail(email).orElse(null);
+        return repo.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
 }
