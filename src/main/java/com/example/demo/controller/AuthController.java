@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
 import com.example.demo.entity.User;
-import com.example.demo.exception.*;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -26,23 +24,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest req) {
-        User u = new User(null, req.getFullName(), req.getEmail(), req.getPassword(), req.getRole());
-        User saved = userService.registerUser(u);
-        String token = jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole());
-        return ResponseEntity.ok(new JwtResponse(token));
+    public ResponseEntity<String> register(@RequestBody User user) {
+        User saved = userService.registerUser(user);
+        return ResponseEntity.ok(
+                jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole())
+        );
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<String> login(@RequestBody User user) {
         authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+                new UsernamePasswordAuthenticationToken(
+                        user.getEmail(), user.getPassword()
+                )
         );
 
-        User user = userService.getUserByEmail(req.getEmail());
-        if (user == null) throw new ResourceNotFoundException("User not found");
-
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
-        return ResponseEntity.ok(new JwtResponse(token));
+        User found = userService.getUserByEmail(user.getEmail());
+        return ResponseEntity.ok(
+                jwtUtil.generateToken(found.getId(), found.getEmail(), found.getRole())
+        );
     }
 }
