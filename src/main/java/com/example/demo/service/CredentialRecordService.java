@@ -5,36 +5,33 @@ import java.util.List;
 
 public interface CredentialRecordService {
 
-    /**
-     * Create a new credential record.
-     *
-     * @param credential the credential to create
-     * @return the created credential
-     */
-    CredentialRecord createCredential(CredentialRecord credential);
+public class CredentialRecord {
+    private String credentialCode;
+    private String title;
+    private String credentialType;
+    private String issuer;
+    private LocalDate expiryDate;
+    private String status;
+    private Long holderId;
+    private String metadataJson;
 
-    /**
-     * Update an existing credential record by ID.
-     *
-     * @param id the ID of the credential to update
-     * @param credential the updated credential data
-     * @return the updated credential
-     */
-    CredentialRecord updateCredential(Long id, CredentialRecord credential);
+    // getters
+    public String getCredentialCode() { return credentialCode; }
+    public String getTitle() { return title; }
+    public String getCredentialType() { return credentialType; }
+    public String getIssuer() { return issuer; }
+    public LocalDate getExpiryDate() { return expiryDate; }
+    public String getStatus() { return status; }
+    public Long getHolderId() { return holderId; }
+    public String getMetadataJson() { return metadataJson; }
 
-    /**
-     * Retrieve all credentials for a specific holder ID.
-     *
-     * @param holderId the ID of the credential holder
-     * @return list of credentials for the holder
-     */
-    List<CredentialRecord> getCredentialsByHolder(Long holderId);
-
-    /**
-     * Retrieve a credential by its credential code.
-     *
-     * @param code the credential code
-     * @return the matching credential
-     */
-    CredentialRecord getCredentialByCode(String code);
+    // setters
+    public void setCredentialCode(String credentialCode) { this.credentialCode = credentialCode; }
+    public void setTitle(String title) { this.title = title; }
+    public void setCredentialType(String credentialType) { this.credentialType = credentialType; }
+    public void setIssuer(String issuer) { this.issuer = issuer; }
+    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
+    public void setStatus(String status) { this.status = status; }
+    public void setHolderId(Long holderId) { this.holderId = holderId; }
+    public void setMetadataJson(String metadataJson) { this.metadataJson = metadataJson; }
 }
