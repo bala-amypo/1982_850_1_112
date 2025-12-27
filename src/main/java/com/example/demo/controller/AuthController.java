@@ -1,37 +1,31 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
 import com.example.demo.entity.User;
-import com.example.demo.security.JwtUtil;
+import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final JwtUtil jwtUtil;
+    private final UserService service;
 
-    public AuthController(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public AuthController(UserService service) {
+        this.service = service;
     }
 
     @PostMapping("/register")
-    public JwtResponse register(@RequestBody RegisterRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setRole(request.getRole());
-        return new JwtResponse(jwtUtil.generateToken(1L, user.getEmail(), user.getRole()),
-                1L, user.getEmail(), user.getRole());
+    public User register(@RequestBody User user) {
+        return service.save(user);
     }
 
     @PostMapping("/login")
-    public JwtResponse login(@RequestBody LoginRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setRole("USER");
-        return new JwtResponse(jwtUtil.generateToken(1L, user.getEmail(), user.getRole()),
-                1L, user.getEmail(), user.getRole());
+    public User login(@RequestBody User user) {
+        User existing = service.findByEmail(user.getEmail());
+        if (existing != null && existing.getPassword().equals(user.getPassword())) {
+            return existing;
+        } else {
+            throw new RuntimeException("Invalid credentials");
+        }
     }
 }
