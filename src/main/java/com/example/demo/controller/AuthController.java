@@ -1,50 +1,48 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.*;
+import com.example.demo.entity.User;
+import com.example.demo.exception.*;
+import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;
+    private final AuthenticationManager authManager;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService,
+                          AuthenticationManager authManager,
+                          JwtUtil jwtUtil) {
         this.userService = userService;
+        this.authManager = authManager;
+        this.jwtUtil = jwtUtil;
     }
 
-    // ================= REGISTER =================
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Map<String, Object> request) {
-
-        String name = (String) request.get("name");
-        String email = (String) request.get("email");
-        String password = (String) request.get("password");
-
-        @SuppressWarnings("unchecked")
-        Set<String> roles = (Set<String>) request.get("roles");
-
-        userService.registerUser(email, password, roles);
-
-        return ResponseEntity.ok("User registered successfully");
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest req) {
+        User u = new User(null, req.getFullName(), req.getEmail(), req.getPassword(), req.getRole());
+        User saved = userService.registerUser(u);
+        String token = jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole());
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    // ================= LOGIN =================
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest req) {
+        authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+        );
 
-        String email = request.get("email");
-        String password = request.get("password");
+        User user = userService.getUserByEmail(req.getEmail());
+        if (user == null) throw new ResourceNotFoundException("User not found");
 
-        String token = userService.login(email, password);
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "type", "Bearer"
-        ));
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 }
