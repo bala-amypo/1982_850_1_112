@@ -6,6 +6,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@GetMapping("/user/{email}")
+public User getUser(@PathVariable String email) {
+    return service.findByEmail(email)
+                  .orElse(null); // safely unwrap Optional<User>
+}
+
 public class AuthController {
 
     private final UserService service;
