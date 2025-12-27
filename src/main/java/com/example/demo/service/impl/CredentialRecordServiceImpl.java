@@ -6,6 +6,7 @@ import com.example.demo.service.CredentialRecordService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
@@ -18,20 +19,18 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
 
     @Override
     public CredentialRecord createCredential(CredentialRecord credential) {
-        // Save a new credential record
         return repository.save(credential);
     }
 
     @Override
     public CredentialRecord updateCredential(Long id, CredentialRecord credential) {
-        // Find existing credential by ID
         CredentialRecord existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Credential with ID " + id + " not found"));
+                .orElseThrow(() -> new RuntimeException("Credential not found"));
 
         // Update fields
-        existing.setCode(credential.getCode());
-        existing.setTitle(credential.getTitle());
-        existing.setType(credential.getType());
+        existing.setCredentialCode(credential.getCredentialCode());
+        existing.setCredentialTitle(credential.getCredentialTitle());
+        existing.setCredentialType(credential.getCredentialType());
         existing.setIssuer(credential.getIssuer());
         existing.setExpiryDate(credential.getExpiryDate());
         existing.setStatus(credential.getStatus());
@@ -39,20 +38,22 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
         existing.setMetadata(credential.getMetadata());
         existing.setRules(credential.getRules());
 
-        // Save updated record
         return repository.save(existing);
     }
 
     @Override
     public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
-        // Fetch all credentials for a specific holder
         return repository.findByHolderId(holderId);
     }
 
     @Override
-    public CredentialRecord getCredentialByCode(String code) {
-        // Fetch credential by unique code
-        return repository.findByCode(code)
-                .orElseThrow(() -> new RuntimeException("Credential with code " + code + " not found"));
+    public CredentialRecord getCredentialByCode(String credentialCode) {
+        return repository.findByCredentialCode(credentialCode)
+                .orElseThrow(() -> new RuntimeException("Credential not found"));
+    }
+
+    @Override
+    public Optional<CredentialRecord> findCredentialByCode(String credentialCode) {
+        return repository.findByCredentialCode(credentialCode);
     }
 }
