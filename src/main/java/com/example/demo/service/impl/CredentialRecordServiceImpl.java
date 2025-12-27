@@ -4,7 +4,6 @@ import com.example.demo.entity.CredentialRecord;
 import com.example.demo.repository.CredentialRecordRepository;
 import com.example.demo.service.CredentialRecordService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -25,17 +24,15 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     public CredentialRecord updateCredential(Long id, CredentialRecord credential) {
         CredentialRecord existing = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Credential not found"));
-
-        existing.setCredentialCode(credential.getCredentialCode());
+        existing.setCode(credential.getCode());
         existing.setTitle(credential.getTitle());
-        existing.setCredentialType(credential.getCredentialType());
+        existing.setType(credential.getType());
         existing.setIssuer(credential.getIssuer());
         existing.setExpiryDate(credential.getExpiryDate());
         existing.setStatus(credential.getStatus());
         existing.setHolderId(credential.getHolderId());
-        existing.setMetadataJson(credential.getMetadataJson());
+        existing.setMetadata(credential.getMetadata());
         existing.setRules(credential.getRules());
-
         return repository.save(existing);
     }
 
@@ -46,7 +43,7 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
 
     @Override
     public CredentialRecord getCredentialByCode(String code) {
-        return repository.findByCredentialCode(code)
+        return repository.findByCode(code)
                 .orElseThrow(() -> new RuntimeException("Credential not found"));
     }
 }
