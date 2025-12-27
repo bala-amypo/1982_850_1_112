@@ -1,8 +1,9 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class CredentialRecord {
@@ -12,47 +13,48 @@ public class CredentialRecord {
     private Long id;
 
     private String code;
-    private String title;
     private String type;
-    private String issuer;
-    private LocalDate expiryDate;
-    private String status;
-    private Long holderId;
-
-    @Column(columnDefinition = "TEXT")
     private String metadata;
 
-    @OneToMany
-    private List<VerificationRule> rules;
+    // Constructors
+    public CredentialRecord() {}
+    
+    public CredentialRecord(String code, String type, String metadata) {
+        this.code = code;
+        this.type = type;
+        this.metadata = metadata;
+    }
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getCode() {
+        return code;
+    }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-    public String getIssuer() { return issuer; }
-    public void setIssuer(String issuer) { this.issuer = issuer; }
+    public String getType() {
+        return type;
+    }
 
-    public LocalDate getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getMetadata() {
+        return metadata;
+    }
 
-    public Long getHolderId() { return holderId; }
-    public void setHolderId(Long holderId) { this.holderId = holderId; }
-
-    public String getMetadata() { return metadata; }
-    public void setMetadata(String metadata) { this.metadata = metadata; }
-
-    public List<VerificationRule> getRules() { return rules; }
-    public void setRules(List<VerificationRule> rules) { this.rules = rules; }
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
+    }
 }
