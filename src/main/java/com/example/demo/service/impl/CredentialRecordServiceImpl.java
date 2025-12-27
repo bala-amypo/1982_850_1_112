@@ -6,6 +6,7 @@ import com.example.demo.service.CredentialRecordService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
@@ -27,7 +28,7 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
                 .orElseThrow(() -> new RuntimeException("Credential not found"));
 
         existing.setCredentialCode(credential.getCredentialCode());
-        existing.setCredentialTitle(credential.getCredentialTitle());
+        existing.setCredentialTitle(credential.getCredentialTitle()); // make sure this exists
         existing.setCredentialType(credential.getCredentialType());
         existing.setIssuer(credential.getIssuer());
         existing.setExpiryDate(credential.getExpiryDate());
@@ -45,9 +46,7 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
     }
 
     @Override
-    public CredentialRecord findCredentialByCode(String code) {
-        // Convert Optional to CredentialRecord using orElseThrow
-        return repository.findByCredentialCode(code)
-                .orElseThrow(() -> new RuntimeException("Credential not found"));
+    public Optional<CredentialRecord> findCredentialByCode(String code) {
+        return repository.findByCredentialCode(code); // return Optional directly
     }
 }
