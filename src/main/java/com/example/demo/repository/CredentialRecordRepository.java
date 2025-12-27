@@ -12,21 +12,21 @@ import java.util.Optional;
 @Repository
 public interface CredentialRecordRepository extends JpaRepository<CredentialRecord, Long> {
 
-    // Fetch credentials by holderId (matches entity field)
+    // Find a credential by its unique code
+    Optional<CredentialRecord> findByCode(String code);
+
+    // Fetch credentials by holderId (assuming entity has holderId field)
     List<CredentialRecord> findByHolderId(Long holderId);
 
-    // Find a credential by its unique code
-    Optional<CredentialRecord> findByCredentialCode(String credentialCode);
-
-    // Find all credentials that have expired before a specific date
+    // Find all credentials that have expired before a specific date (assuming entity has expiryDate field)
     @Query("SELECT c FROM CredentialRecord c WHERE c.expiryDate < :date")
     List<CredentialRecord> findExpiredBefore(LocalDate date);
 
-    // Find credentials by status
+    // Find credentials by status (assuming entity has status field)
     @Query("SELECT c FROM CredentialRecord c WHERE c.status = :status")
-    List<CredentialRecord> findByStatusUsingHql(String status);
+    List<CredentialRecord> findByStatus(String status);
 
-    // Find credentials by issuer and type
+    // Find credentials by issuer and type (assuming entity has issuer and credentialType fields)
     @Query("SELECT c FROM CredentialRecord c WHERE c.issuer = :issuer AND c.credentialType = :type")
-    List<CredentialRecord> searchByIssuerAndType(String issuer, String type);
+    List<CredentialRecord> findByIssuerAndType(String issuer, String type);
 }
