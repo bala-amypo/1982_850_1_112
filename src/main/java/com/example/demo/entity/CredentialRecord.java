@@ -11,22 +11,28 @@ public class CredentialRecord {
     private Long id;
 
     private String credentialCode;
-
-    private String credentialTitle; // <-- make sure this exists
+    private String credentialTitle;
     private String credentialType;
     private String issuer;
     private Date expiryDate;
     private String status;
     private Long holderId;
 
+    @Lob
+    private String metadata;  // JSON or other data
+
+    @Lob
+    private String rules;     // JSON or other data
+
     // getters and setters
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public String getCredentialCode() { return credentialCode; }
     public void setCredentialCode(String credentialCode) { this.credentialCode = credentialCode; }
 
-    public String getCredentialTitle() { return credentialTitle; } // <-- this must exist
+    public String getCredentialTitle() { return credentialTitle; }
     public void setCredentialTitle(String credentialTitle) { this.credentialTitle = credentialTitle; }
 
     public String getCredentialType() { return credentialType; }
@@ -44,5 +50,9 @@ public class CredentialRecord {
     public Long getHolderId() { return holderId; }
     public void setHolderId(Long holderId) { this.holderId = holderId; }
 
-    // add other fields if needed
+    public String getMetadata() { return metadata; }
+    public void setMetadata(String metadata) { this.metadata = metadata; }
+
+    public String getRules() { return rules; }
+    public void setRules(String rules) { this.rules = rules; }
 }
