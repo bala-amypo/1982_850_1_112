@@ -6,7 +6,6 @@ import com.example.demo.service.CredentialRecordService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
@@ -19,17 +18,14 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
 
     @Override
     public CredentialRecord createCredential(CredentialRecord credential) {
-        // Save the new credential
         return repository.save(credential);
     }
 
     @Override
     public CredentialRecord updateCredential(Long id, CredentialRecord credential) {
-        // Find existing credential
         CredentialRecord existing = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Credential not found"));
 
-        // Update all fields
         existing.setCredentialCode(credential.getCredentialCode());
         existing.setTitle(credential.getTitle());
         existing.setCredentialType(credential.getCredentialType());
