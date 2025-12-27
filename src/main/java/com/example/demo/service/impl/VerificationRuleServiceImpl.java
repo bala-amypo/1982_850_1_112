@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.VerificationRule;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.VerificationRuleRepository;
 import com.example.demo.service.VerificationRuleService;
 import org.springframework.stereotype.Service;
@@ -34,25 +33,22 @@ public class VerificationRuleServiceImpl implements VerificationRuleService {
 
     @Override
     public VerificationRule getRuleById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Verification rule not found with id: " + id));
+        return repository.findById(id).orElse(null);
     }
 
     @Override
     public VerificationRule updateRule(Long id, VerificationRule rule) {
-        VerificationRule existing = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Verification rule not found with id: " + id));
-
-        existing.setRuleCode(rule.getRuleCode());
-        existing.setActive(rule.getActive());
-        return repository.save(existing);
+        VerificationRule existing = repository.findById(id).orElse(null);
+        if (existing != null) {
+            existing.setRuleCode(rule.getRuleCode());
+            existing.setActive(rule.getActive());
+            return repository.save(existing);
+        }
+        return null;
     }
 
     @Override
     public void deleteRule(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("Verification rule not found with id: " + id);
-        }
         repository.deleteById(id);
     }
 }
