@@ -11,41 +11,48 @@ public class CredentialRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String credentialCode;
+    private String code;
     private String title;
-    private String credentialType;
+    private String type;
     private String issuer;
     private LocalDate expiryDate;
     private String status;
     private Long holderId;
-    
-    @Lob
-    private String metadataJson;
 
-    @ElementCollection
-    private List<String> rules;
+    @Column(columnDefinition = "TEXT")
+    private String metadata;
 
-    // Getters
+    @OneToMany
+    private List<VerificationRule> rules;
+
+    // Getters and Setters
     public Long getId() { return id; }
-    public String getCredentialCode() { return credentialCode; }
-    public String getTitle() { return title; }
-    public String getCredentialType() { return credentialType; }
-    public String getIssuer() { return issuer; }
-    public LocalDate getExpiryDate() { return expiryDate; }
-    public String getStatus() { return status; }
-    public Long getHolderId() { return holderId; }
-    public String getMetadataJson() { return metadataJson; }
-    public List<String> getRules() { return rules; }
-
-    // Setters
     public void setId(Long id) { this.id = id; }
-    public void setCredentialCode(String credentialCode) { this.credentialCode = credentialCode; }
+
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+
+    public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
-    public void setCredentialType(String credentialType) { this.credentialType = credentialType; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public String getIssuer() { return issuer; }
     public void setIssuer(String issuer) { this.issuer = issuer; }
+
+    public LocalDate getExpiryDate() { return expiryDate; }
     public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
+
+    public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public Long getHolderId() { return holderId; }
     public void setHolderId(Long holderId) { this.holderId = holderId; }
-    public void setMetadataJson(String metadataJson) { this.metadataJson = metadataJson; }
-    public void setRules(List<String> rules) { this.rules = rules; }
+
+    public String getMetadata() { return metadata; }
+    public void setMetadata(String metadata) { this.metadata = metadata; }
+
+    public List<VerificationRule> getRules() { return rules; }
+    public void setRules(List<VerificationRule> rules) { this.rules = rules; }
 }
