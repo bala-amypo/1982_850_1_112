@@ -54,4 +54,5 @@ public class CredentialRecord {
     public void setMetadataJson(String metadataJson) { this.metadataJson = metadataJson; }
 
     public Set<VerificationRule> getRules() { return rules; }
+    public void setRules(Set<VerificationRule> rules) { this.rules = rules; }
 }
