@@ -13,14 +13,11 @@ public class AuditTrailRecord {
     private Long credentialId;
     private LocalDateTime loggedAt;
 
-    public AuditTrailRecord() {}
+    public Long getId() { return id; }
 
-    public AuditTrailRecord(Long credentialId) {
-        this.credentialId = credentialId;
-        this.loggedAt = LocalDateTime.now();
-    }
+    public Long getCredentialId() { return credentialId; }
+    public void setCredentialId(Long credentialId) { this.credentialId = credentialId; }
 
-    public void setLoggedAt(LocalDateTime loggedAt) {
-        this.loggedAt = loggedAt;
-    }
+    public LocalDateTime getLoggedAt() { return loggedAt; }
+    public void setLoggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; }
 }
