@@ -5,9 +5,5 @@ import java.util.List;
 
 public interface VerificationRuleService {
     VerificationRule createRule(VerificationRule rule);
-    List<VerificationRule> getAllRules();
     List<VerificationRule> getActiveRules();
-    VerificationRule getRuleById(Long id);
-    VerificationRule updateRule(Long id, VerificationRule rule);
-    void deleteRule(Long id);
 }

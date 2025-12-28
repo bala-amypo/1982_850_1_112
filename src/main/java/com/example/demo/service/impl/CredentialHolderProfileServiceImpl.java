@@ -4,14 +4,16 @@ import com.example.demo.entity.CredentialHolderProfile;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.CredentialHolderProfileRepository;
 import com.example.demo.service.CredentialHolderProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CredentialHolderProfileServiceImpl implements CredentialHolderProfileService {
 
-    @Autowired
-    private CredentialHolderProfileRepository repository;
+    private final CredentialHolderProfileRepository repository;
+
+    public CredentialHolderProfileServiceImpl(CredentialHolderProfileRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public CredentialHolderProfile createHolder(CredentialHolderProfile profile) {

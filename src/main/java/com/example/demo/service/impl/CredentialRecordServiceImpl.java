@@ -5,8 +5,8 @@ import com.example.demo.repository.CredentialRecordRepository;
 import com.example.demo.service.CredentialRecordService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CredentialRecordServiceImpl implements CredentialRecordService {
@@ -17,36 +17,38 @@ public class CredentialRecordServiceImpl implements CredentialRecordService {
         this.repository = repository;
     }
 
-    @Override
-    public CredentialRecord createCredential(CredentialRecord credential) {
-        return repository.save(credential);
+    public CredentialRecord createCredential(CredentialRecord record) {
+        if (record.getExpiryDate() != null && record.getExpiryDate().isBefore(LocalDate.now())) {
+            record.setStatus("EXPIRED");
+        } else if (record.getStatus() == null) {
+            record.setStatus("VALID");
+        }
+        return repository.save(record);
     }
 
-    @Override
-    public CredentialRecord updateCredential(Long id, CredentialRecord credential) {
-        CredentialRecord existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Credential not found"));
-
-        existing.setCredentialCode(credential.getCredentialCode());
-        existing.setCredentialTitle(credential.getCredentialTitle()); // make sure this exists
-        existing.setCredentialType(credential.getCredentialType());
-        existing.setIssuer(credential.getIssuer());
-        existing.setExpiryDate(credential.getExpiryDate());
-        existing.setStatus(credential.getStatus());
-        existing.setHolderId(credential.getHolderId());
-        existing.setMetadata(credential.getMetadata());
-        existing.setRules(credential.getRules());
-
-        return repository.save(existing);
-    }
-
-    @Override
     public List<CredentialRecord> getCredentialsByHolder(Long holderId) {
         return repository.findByHolderId(holderId);
     }
 
-    @Override
-    public Optional<CredentialRecord> findCredentialByCode(String code) {
-        return repository.findByCredentialCode(code); // return Optional directly
+    public CredentialRecord getCredentialByCode(String code) {
+        return repository.findByCredentialCode(code).orElse(null);
+    }
+
+    public List<CredentialRecord> getAllCredentials() {
+        return repository.findAll();
+    }
+
+    public CredentialRecord updateCredential(Long id, CredentialRecord record) {
+        CredentialRecord existing = repository.findById(id).orElse(null);
+        if (existing != null) {
+            if (record.getTitle() != null) existing.setTitle(record.getTitle());
+            if (record.getIssuer() != null) existing.setIssuer(record.getIssuer());
+            if (record.getCredentialType() != null) existing.setCredentialType(record.getCredentialType());
+            if (record.getExpiryDate() != null) existing.setExpiryDate(record.getExpiryDate());
+            if (record.getMetadataJson() != null) existing.setMetadataJson(record.getMetadataJson());
+            if (record.getCredentialCode() != null) existing.setCredentialCode(record.getCredentialCode());
+            return repository.save(existing);
+        }
+        return null;
     }
 }
