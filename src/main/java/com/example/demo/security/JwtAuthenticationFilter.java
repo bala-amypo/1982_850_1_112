@@ -36,11 +36,11 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            String email = jwtUtil.getUsernameFromToken(token);
+            String email = jwtUtil.extractEmail(token);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            if (jwtUtil.isTokenValid(token, userDetails)) {
+            if (jwtUtil.validateToken(token, email)) {
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities()
