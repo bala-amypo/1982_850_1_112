@@ -1,44 +1,53 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.JwtResponse;
+import com.example.demo.dto.LoginRequest;
+import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
+import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
-@RequestMapping("/auth")  // Base path for all endpoints
+@RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService service;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserService service) {
-        this.service = service;
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
-    // Get user by email
-    @GetMapping("/user/{email}")
-    public User getUser(@PathVariable String email) {
-        Optional<User> optionalUser = service.findByEmail(email);
-        return optionalUser.orElse(null);  // safely unwrap Optional<User>
-    }
-
-    // Register new user
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return service.save(user);
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
+        User user = new User();
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setRole(request.getRole());
+
+        User saved = userService.registerUser(user);
+        String token = jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole());
+
+        return ResponseEntity.ok(new JwtResponse(token, saved.getId(), saved.getEmail(), saved.getRole()));
     }
 
-    // Login user
     @PostMapping("/login")
-    public User login(@RequestBody User user) {
-        Optional<User> optionalUser = service.findByEmail(user.getEmail());
-        if (optionalUser.isPresent()) {
-            User existing = optionalUser.get();
-            if (existing.getPassword().equals(user.getPassword())) {
-                return existing;
-            }
-        }
-        throw new RuntimeException("Invalid credentials");
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        User user = userService.findByEmail(request.getEmail());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
+
+        return ResponseEntity.ok(new JwtResponse(token, user.getId(), user.getEmail(), user.getRole()));
     }
 }

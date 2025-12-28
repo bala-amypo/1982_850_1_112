@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.AuditTrailRecord;
 import com.example.demo.service.AuditTrailService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,19 +11,19 @@ import java.util.List;
 @RequestMapping("/audit")
 public class AuditTrailController {
 
-    private final AuditTrailService auditService;
+    private final AuditTrailService service;
 
-    public AuditTrailController(AuditTrailService auditService) {
-        this.auditService = auditService;
+    public AuditTrailController(AuditTrailService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public AuditTrailRecord logEvent(@RequestBody AuditTrailRecord record) {
-        return auditService.logEvent(record);
+    public ResponseEntity<AuditTrailRecord> log(@RequestBody AuditTrailRecord record) {
+        return ResponseEntity.ok(service.logEvent(record));
     }
 
-    @GetMapping("/{credentialId}")
-    public List<AuditTrailRecord> getLogs(@PathVariable Long credentialId) {
-        return auditService.getLogsByCredential(credentialId);
+    @GetMapping("/credential/{credentialId}")
+    public ResponseEntity<List<AuditTrailRecord>> getByCredential(@PathVariable Long credentialId) {
+        return ResponseEntity.ok(service.getLogsByCredential(credentialId));
     }
 }
