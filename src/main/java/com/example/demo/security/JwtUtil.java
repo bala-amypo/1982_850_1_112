@@ -23,7 +23,6 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-  
     public String generateToken(Long userId, String email, String role) {
 
         Map<String, Object> claims = new HashMap<>();
@@ -41,12 +40,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
-    
     public boolean validateToken(String token, String email) {
         try {
             String tokenEmail = extractEmail(token);
@@ -56,7 +53,6 @@ public class JwtUtil {
         }
     }
 
-    
     public boolean validateToken(String token, UserDetails userDetails) {
         try {
             String tokenEmail = extractEmail(token);
@@ -67,7 +63,6 @@ public class JwtUtil {
         }
     }
 
-   
     private Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -76,7 +71,6 @@ public class JwtUtil {
                 .getBody();
     }
 
-   
     private boolean isTokenExpired(String token) {
         return extractClaims(token)
                 .getExpiration()
