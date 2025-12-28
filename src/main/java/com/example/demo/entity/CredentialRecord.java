@@ -19,12 +19,12 @@ public class CredentialRecord {
     private Long holderId;
 
     @Lob
-    private String metadata;  // JSON or other data
+    private String metadata;  
 
     @Lob
-    private String rules;     // JSON or other data
+    private String rules;    
 
-    // getters and setters
+    
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
