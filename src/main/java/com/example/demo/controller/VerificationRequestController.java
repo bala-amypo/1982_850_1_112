@@ -9,15 +9,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/verifications")
 public class VerificationRequestController {
 
-    private final VerificationRequestService verificationService;
+    private final VerificationRequestService service;
 
-    public VerificationRequestController(VerificationRequestService verificationService) {
-        this.verificationService = verificationService;
+    public VerificationRequestController(VerificationRequestService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<VerificationRequest> initiate(
-            @RequestBody VerificationRequest request) {
-        return ResponseEntity.ok(verificationService.initiateVerification(request));
+    public ResponseEntity<VerificationRequest> initiate(@RequestBody VerificationRequest request) {
+        return ResponseEntity.ok(service.initiateVerification(request));
     }
 }

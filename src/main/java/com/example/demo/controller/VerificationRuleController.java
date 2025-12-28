@@ -9,15 +9,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/rules")
 public class VerificationRuleController {
 
-    private final VerificationRuleService ruleService;
+    private final VerificationRuleService service;
 
-    public VerificationRuleController(VerificationRuleService ruleService) {
-        this.ruleService = ruleService;
+    public VerificationRuleController(VerificationRuleService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<VerificationRule> create(
-            @RequestBody VerificationRule rule) {
-        return ResponseEntity.ok(ruleService.createRule(rule));
+    public ResponseEntity<VerificationRule> create(@RequestBody VerificationRule rule) {
+        return ResponseEntity.ok(service.createRule(rule));
     }
 }
