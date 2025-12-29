@@ -52,7 +52,7 @@ public class RegisterRequest {
         this.role = role;
     }
 
-    // Optional: for debugging
+  
     @Override
     public String toString() {
         return "RegisterRequest{" +
