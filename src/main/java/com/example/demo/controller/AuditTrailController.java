@@ -11,19 +11,21 @@ import java.util.List;
 @RequestMapping("/audit")
 public class AuditTrailController {
 
-    private final AuditTrailService service;
+    private final AuditTrailService auditService;
 
-    public AuditTrailController(AuditTrailService service) {
-        this.service = service;
+    public AuditTrailController(AuditTrailService auditService) {
+        this.auditService = auditService;
     }
 
     @PostMapping
-    public ResponseEntity<AuditTrailRecord> log(@RequestBody AuditTrailRecord record) {
-        return ResponseEntity.ok(service.logEvent(record));
+    public ResponseEntity<AuditTrailRecord> log(
+            @RequestBody AuditTrailRecord record) {
+        return ResponseEntity.ok(auditService.logEvent(record));
     }
 
     @GetMapping("/credential/{credentialId}")
-    public ResponseEntity<List<AuditTrailRecord>> getByCredential(@PathVariable Long credentialId) {
-        return ResponseEntity.ok(service.getLogsByCredential(credentialId));
+    public ResponseEntity<List<AuditTrailRecord>> getByCredential(
+            @PathVariable Long credentialId) {
+        return ResponseEntity.ok(auditService.getLogsByCredential(credentialId));
     }
 }
